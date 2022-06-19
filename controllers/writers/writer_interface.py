@@ -8,5 +8,5 @@ class WriterInterface:
     def set_in_progress_status(self):
         pass
 
-    def finish(self):
+    def finish_writing(self):
         pass

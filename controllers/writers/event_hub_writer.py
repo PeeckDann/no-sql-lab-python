@@ -64,7 +64,7 @@ class EventHubWriter(WriterInterface):
     def _set_completed_status(self):
         self.redis_client.set(self.status_key, COMPLETED)
 
-    def finish(self):
+    def finish_writing(self):
         self.redis_client.delete(self.indexes_key)
         self._set_completed_status()
         self.producer.close()

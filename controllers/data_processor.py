@@ -2,6 +2,7 @@ import os
 import asyncio
 
 from urllib.parse import urlparse
+from threading import Thread
 from sodapy import Socrata
 
 from utils.utils import get_data_chunks
@@ -36,12 +37,18 @@ class DataProcessor:
         return result
 
     async def _upload_data(self, content):
+        threads = []
         try:
             self.writer.set_in_progress_status()
             for data_chunk, offset in get_data_chunks(content, self.data_chunk_size):
-                self.writer.write_data(data_chunk, offset)
+                thread = Thread(target=self.writer.write_data, args=(data_chunk, offset))
+                threads.append(thread)
+                thread.start()
 
-            self.writer.finish()
+            for thread in threads:
+                thread.join()
+
+            self.writer.finish_writing()
         except Exception as e:
             raise ProcessingError("Couldn't write to {}. Error: {}".format(
                 self.output_strategy, str(e)
