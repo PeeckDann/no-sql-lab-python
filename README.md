@@ -1,1 +1,1 @@
-# nosql-lab-python
+# no-sql-lab-python
